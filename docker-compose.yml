@@ -1,0 +1,22 @@
+version: '2'
+services:
+  logspout:
+    image: gliderlabs/logspout
+    ports:
+      - 18000:80
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: syslog://syslog:514
+    links:
+      - syslog
+
+  syslog:
+    build: syslog/
+    image: xieyunzi/rsyslog
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./syslog/etc/rsyslog.conf:/etc/rsyslog.conf
+      - ./syslog/etc/rsyslog.d:/etc/rsyslog.d
+    extra_hosts:
+      - "logstash:${LOGSTASH_HOST}"
